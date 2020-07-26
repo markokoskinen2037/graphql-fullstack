@@ -12,11 +12,15 @@ const Authors = (props) => {
 
   useEffect(() => {
     if(!result.data) return
-    setSelectedAuthor(result.data.allAuthors[0].name)
+    setSelectedAuthor(result.data.allAuthors[0]?.name)
   }, [result])
 
   if(result.loading){
     return "Loading..."
+  }
+
+  if(result.error){
+    return result.error.toString()
   }
 
   if (!props.show) {

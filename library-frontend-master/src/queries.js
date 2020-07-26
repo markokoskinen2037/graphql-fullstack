@@ -16,7 +16,7 @@ query {
     allBooks {
         title
         published
-        author
+        author {name,id,born}
         id
     }
 }
@@ -29,7 +29,7 @@ mutation addBook($title: String!, $author: String!, $published: Int!, $genres: [
     author: $author,
     published: $published,
     genres: $genres,
-  ) {title,published,author,id,genres}
+  ) {title,published,author {name,id,born},id,genres}
 }
 `
 export const UPDATE_AUTHOR = gql`
