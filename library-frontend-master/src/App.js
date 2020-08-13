@@ -67,6 +67,7 @@ const App = () => {
           token={token}
           setToken={setToken}
           setPage={setPage}
+          setError={setErrorMessage}
         />
 
       </div>
