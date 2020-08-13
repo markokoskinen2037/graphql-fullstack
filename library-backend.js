@@ -87,18 +87,16 @@ const resolvers = {
     },
     allAuthors: async () => {
       const authors = await Author.find({})
-      const books = await Book.find({}).populate('author')
 
-      const res = authors.map((a) => ({
-        name: a.name,
-        id: a._id,
-        bookCount: books.reduce((pre, cur) => {
-          if (cur.author.name === a.name) return ++pre
-          return pre
-        }, 0),
-      }))
+      const temp = authors.map((a) => {
+        return {
+          id: a._id,
+          name: a.name,
+          bookCount: a.books.length,
+        }
+      })
 
-      return res
+      return temp
     },
     me: (root, args, context) => {
       return context.currentUser
@@ -125,6 +123,9 @@ const resolvers = {
           genres,
           author: acualAuthor._id,
         })
+
+        acualAuthor.books.push(newBook._id)
+        await acualAuthor.save()
 
         await newBook.populate('author').execPopulate()
 
