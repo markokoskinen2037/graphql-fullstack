@@ -1,21 +1,35 @@
-import React from 'react'
-import { useQuery } from '@apollo/client'
+import React, { useState, useEffect } from 'react'
+import { useLazyQuery } from '@apollo/client'
 import { GET_ALL_BOOKS } from '../queries'
+
 
 const Books = (props) => {
 
-  const results = useQuery(GET_ALL_BOOKS)
+  const [getBooks, results] = useLazyQuery(GET_ALL_BOOKS)
+  const [selectedGenre, setSelectedGenre] = useState()
+
+  useEffect(() => {
+    getBooks({ variables: { genre: selectedGenre } })
+  }, [selectedGenre])
 
 
-  if(results.loading){
+  if (results.loading) {
     return "Loading..."
   }
 
-  if (!props.show) {
+  if (!props.show || !results.data) {
     return null
   }
-  
+
+  const uniqueGenres = results.data.allBooks.reduce((acc, { genres }) => {
+    genres.forEach(g => {
+      if (!acc.includes(g)) acc.push(g)
+    })
+    return acc
+  }, [])
+
   const books = results.data.allBooks
+
   return (
     <div>
       <h2>books</h2>
@@ -40,7 +54,14 @@ const Books = (props) => {
           )}
         </tbody>
       </table>
+      <div>
+        {uniqueGenres.map(g => (
+          <button key={g} onClick={() => setSelectedGenre(g)}>{g}</button>
+        ))}
+        {selectedGenre && <button onClick={() => setSelectedGenre(null)}>x</button>}
+      </div>
     </div>
+
   )
 }
 
